@@ -86,9 +86,9 @@ class tx_realurl_tcemain {
 	 */
 	protected function clearOtherCaches($pageId) {
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_realurl_urldecodecache',
-			'page_id=' . $pageId);
+			'page_id=' . intval($pageId));
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_realurl_urlencodecache',
-			'page_id=' . $pageId);
+			'page_id=' . intval($pageId));
 	}
 
 	/**
@@ -99,7 +99,7 @@ class tx_realurl_tcemain {
 	 */
 	protected function clearPathCache($pageId) {
 		$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_realurl_pathcache',
-			'page_id=' . $pageId);
+			'page_id=' . intval($pageId));
 	}
 
 	/**
@@ -128,7 +128,7 @@ class tx_realurl_tcemain {
 	protected function expirePathCache($pageId, $languageId) {
 		$expirationTime = $this->getExpirationTime();
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_realurl_pathcache',
-			'page_id=' . $pageId . ' AND language_id=' . $languageId . ' AND expire=0',
+			'page_id=' . intval($pageId) . ' AND language_id=' . intval($languageId) . ' AND expire=0',
 			array(
 				'expire' => $expirationTime
 			));
@@ -143,7 +143,7 @@ class tx_realurl_tcemain {
 	protected function expirePathCacheForAllLanguages($pageId) {
 		$expirationTime = $this->getExpirationTime();
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_realurl_pathcache',
-			'page_id=' . $pageId . ' AND expire=0',
+			'page_id=' . intval($pageId) . ' AND expire=0',
 			array(
 				'expire' => $expirationTime
 			));
@@ -233,7 +233,7 @@ class tx_realurl_tcemain {
 	 */
 	protected static function getInfoFromOverlayPid($pid) {
 		list($rec) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('pid,sys_language_uid',
-			'pages_language_overlay', 'uid=' . $pid);
+			'pages_language_overlay', 'uid=' . intval($pid));
 		return array($rec['pid'], $rec['sys_language_uid']);
 	}
 
