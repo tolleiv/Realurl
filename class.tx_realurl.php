@@ -876,7 +876,7 @@ class tx_realurl {
                                 $cHashParameters = array_merge($this->cHashParameters, $paramKeyValues);
                                 unset($cHashParameters['cHash']);
                                 $cHashParameters = t3lib_div::implodeArrayForUrl('', $cHashParameters);
-                                if (method_exists('t3lib_cacheHash', 'generateForParameters')) {
+                                if (false && method_exists('t3lib_cacheHash', 'generateForParameters')) {
                                         $cacheHash = t3lib_div::makeInstance('t3lib_cacheHash');
                                         $cHashParameters = $cacheHash->getRelevantParameters($cHashParameters);
                                         $paramKeyValues['cHash'] = $cacheHash->generateForParameters($addQueryParams);
