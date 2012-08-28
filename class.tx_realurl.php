@@ -873,6 +873,7 @@ class tx_realurl {
 		if (isset($paramKeyValues['cHash'])) {
 
 			if ($this->rebuildCHash) {
+<<<<<<< HEAD
 				$cHashParameters = array_merge($this->cHashParameters, $paramKeyValues);
 				unset($cHashParameters['cHash']);
 				$cHashParameters = t3lib_div::implodeArrayForUrl('', $cHashParameters);
@@ -891,6 +892,25 @@ class tx_realurl {
 				}
 				unset($cHashParameters);
 			}
+=======
+                                $cHashParameters = array_merge($this->cHashParameters, $paramKeyValues);
+                                unset($cHashParameters['cHash']);
+                                $cHashParameters = t3lib_div::implodeArrayForUrl('', $cHashParameters);
+                                if (false && method_exists('t3lib_cacheHash', 'generateForParameters')) {
+                                        $cacheHash = t3lib_div::makeInstance('t3lib_cacheHash');
+                                        $cHashParameters = $cacheHash->getRelevantParameters($cHashParameters);
+                                        $paramKeyValues['cHash'] = $cacheHash->generateForParameters($addQueryParams);
+                                }
+                                else if (method_exists('t3lib_div', 'calculateCHash')) {
+                                        $cHashParameters = t3lib_div::cHashParams($cHashParameters);
+                                        $paramKeyValues['cHash'] = t3lib_div::calculateCHash($cHashParameters);
+                                }
+                                else {
+                                        $cHashParameters = t3lib_div::cHashParams($cHashParameters);
+                                        $paramKeyValues['cHash'] = t3lib_div::shortMD5(serialize($cHashParameters));
+                                }
+                                unset($cHashParameters);}
+>>>>>>> tolleiv/aoe_modifications
 
 			if (count($paramKeyValues) == 1) {
 
@@ -1242,11 +1262,11 @@ class tx_realurl {
 
 
 		// Fixed Post-vars:
-		$fixedPostVarSetCfg = $this->getPostVarSetConfig($cachedInfo['id'], 'fixedPostVars');
+		$fixedPostVarSetCfg = $this->getPostVarSetConfig($cachedInfo['id'] ? $cachedInfo['id'] : $cachedInfo['rootpage_id'], 'fixedPostVars');
 		$fixedPost_GET_VARS = $this->decodeSpURL_settingPreVars($pathParts, $fixedPostVarSetCfg);
 
 		// Setting "postVarSets":
-		$postVarSetCfg = $this->getPostVarSetConfig($cachedInfo['id']);
+		$postVarSetCfg = $this->getPostVarSetConfig($cachedInfo['id'] ? $cachedInfo['id'] : $cachedInfo['rootpage_id']);
 		$post_GET_VARS = $this->decodeSpURL_settingPostVarSets($pathParts, $postVarSetCfg, $cachedInfo['id']);
 
 		// Looking for remaining parts:
