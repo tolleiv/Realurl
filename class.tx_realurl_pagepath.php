@@ -42,14 +42,24 @@ include_once (t3lib_extMgm::extPath ( 'realurl' ) . 'class.tx_realurl_cachemgmt.
  * @todo	check last updatetime of pages
  */
 class tx_realurl_pagepath {
-	var $generator; //help object for generating paths
-	var $insert = false;
-	var $pObj;
-	var $conf;
+		/**
+		 * @var array $conf
+		 */
+	protected $conf;
 
-	/**
-	 * @var tx_realurl_cachemgmt
-	 */
+		/**
+		 * @var tx_realurl_pathgenerator $generator
+		 */
+	protected $generator;
+
+		/**
+	 	* @var tx_realurl $pObj
+	 	*/
+	protected $pObj;
+
+		/**
+	 	* @var tx_realurl_cachemgmt $cachemgmt
+	 	*/
 	protected $cachemgmt;
 
 	/** Main function -> is called from real_url
@@ -105,7 +115,7 @@ class tx_realurl_pagepath {
 			//clear this page cache:
 			$this->cachemgmt->markAsDirtyCompletePid($pageId );
 		}
-		
+
 		$buildedPath = $this->cachemgmt->isInCache($pageId);
 
 		if (!$buildedPath) {
@@ -126,12 +136,16 @@ class tx_realurl_pagepath {
 
 	/**
 	 * Gets the pageid from a pagepath, needs to check the cache
-	 * 
+	 *
 	 * @param	array		Array of segments from virtual path
 	 * @return	integer		Page ID
 	 */
 	protected function _alias2id(&$pagePath) {
 		$pagePathOrigin = $pagePath;
+			// Page path is urlencoded in cache tables, so make sure path segments are encoded the same way, otherwise cache will miss
+		if ($this->pObj->extConf['init']['enableAllUnicodeLetters']) {
+			array_walk($pagePathOrigin, create_function('&$pathSegment', '$pathSegment = mb_detect_encoding($pathSegment, "ASCII", TRUE) ? $pathSegment : rawurlencode($pathSegment);'));
+		}
 		$this->pObj->appendFilePart($pagePathOrigin);
 		$keepPath = array ();
 			//Check for redirect
@@ -326,7 +340,7 @@ class tx_realurl_pagepath {
 	function _isCrawlerRun() {
 		if (
 			t3lib_extMgm::isLoaded('crawler')
-			&& $GLOBALS['TSFE']->applicationData['tx_crawler']['running'] 
+			&& $GLOBALS['TSFE']->applicationData['tx_crawler']['running']
 			&& (
 				in_array('tx_cachemgm_recache', $GLOBALS['TSFE']->applicationData['tx_crawler']['parameters']['procInstructions'])
 				|| in_array('tx_realurl_rebuild', $GLOBALS['TSFE']->applicationData['tx_crawler']['parameters']['procInstructions'])
@@ -364,9 +378,10 @@ class tx_realurl_pagepath {
 	 *
 	 */
 	function initGenerator() {
-		$this->generator = t3lib_div::makeInstance ( 'tx_realurl_pathgenerator' );
-		$this->generator->init ( $this->conf );
-		$this->generator->setRootPid ( $this->_getRootPid () );
+		$this->generator = t3lib_div::makeInstance('tx_realurl_pathgenerator');
+		$this->generator->init($this->conf);
+		$this->generator->setRootPid ($this->_getRootPid());
+		$this->generator->setParentObject($this->pObj);
 	}
 
 	/**
@@ -381,4 +396,3 @@ class tx_realurl_pagepath {
 		$this->cachemgmt->setRootPid ( $this->_getRootPid () );
 	}
 }
-?>
