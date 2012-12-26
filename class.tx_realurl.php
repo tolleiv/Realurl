@@ -821,7 +821,7 @@ class tx_realurl {
 				$GLOBALS['TSFE']->applicationData['tx_realurl']['_CACHE'][$hash] = $setEncodedURL;
 
 				// If the page id is NOT an integer, it's an alias we have to look up:
-				if (!t3lib_div::testInt($this->encodePageId)) {
+				if (!t3lib_utility_Math::canBeInterpretedAsInteger($this->encodePageId)) {
 					$this->encodePageId = $this->pageAliasToID($this->encodePageId);
 				}
 
@@ -1028,7 +1028,7 @@ class tx_realurl {
 
 			// If the URL is a single script like "123.1.html" it might be an "old" simulateStaticDocument request. If this is the case and support for this is configured, do NOT try and resolve it as a Speaking URL
 			$fI = t3lib_div::split_fileref($speakingURIpath);
-			if (!t3lib_div::testInt($this->pObj->id) && $fI['path'] == '' && $this->extConf['fileName']['defaultToHTMLsuffixOnPrev'] && $this->extConf['init']['respectSimulateStaticURLs']) {
+			if (!t3lib_utility_Math::canBeInterpretedAsInteger($this->pObj->id) && $fI['path'] == '' && $this->extConf['fileName']['defaultToHTMLsuffixOnPrev'] && $this->extConf['init']['respectSimulateStaticURLs']) {
 				// If page ID does not exist yet and page is on the root level and both
 				// respectSimulateStaticURLs and defaultToHTMLsuffixOnPrev are set, than
 				// ignore respectSimulateStaticURLs and attempt to resolve page id.
@@ -1223,11 +1223,11 @@ class tx_realurl {
 		$pre_GET_VARS = $this->decodeSpURL_settingPreVars($pathParts, $this->extConf['preVars']);
 		if (isset($this->extConf['pagePath']['languageGetVar'])) {
 			$languageGetVar = $this->extConf['pagePath']['languageGetVar'];
-			if (isset($pre_GET_VARS[$languageGetVar]) && t3lib_div::testInt($pre_GET_VARS[$languageGetVar])) {
+			if (isset($pre_GET_VARS[$languageGetVar]) && t3lib_utility_Math::canBeInterpretedAsInteger($pre_GET_VARS[$languageGetVar])) {
 				// Language from URL
 				$this->detectedLanguage = $pre_GET_VARS[$languageGetVar];
 			}
-			elseif (isset($_GET[$languageGetVar]) && t3lib_div::testInt($_GET[$languageGetVar])) {
+			elseif (isset($_GET[$languageGetVar]) && t3lib_utility_Math::canBeInterpretedAsInteger($_GET[$languageGetVar])) {
 				// This is for _DOMAINS feature
 				$this->detectedLanguage = $_GET[$languageGetVar];
 			}
@@ -1668,7 +1668,7 @@ class tx_realurl {
 							} elseif (is_array($setup['lookUpTable']) && $value != '') {
 								$temp = $value;
 								$value = $this->lookUpTranslation($setup['lookUpTable'], $value, TRUE);
-								if (!t3lib_div::testInt($value) && !strcmp($value, $temp)) {
+								if (!t3lib_utility_Math::canBeInterpretedAsInteger($value) && !strcmp($value, $temp)) {
 									// no match found
 									if ($setup['lookUpTable']['enable404forInvalidAlias'] ) {
 										$this->decodeSpURL_throw404('Couldn\'t map alias "' . $value . '" to an ID');
@@ -2237,7 +2237,7 @@ class tx_realurl {
 	public function getPostVarSetConfig($page_id, $mainCat = 'postVarSets') {
 
 		// If the page id is NOT an integer, it's an alias we have to look up:
-		if (!t3lib_div::testInt($page_id)) {
+		if (!t3lib_utility_Math::canBeInterpretedAsInteger($page_id)) {
 			$page_id = $this->pageAliasToID($page_id);
 		}
 
